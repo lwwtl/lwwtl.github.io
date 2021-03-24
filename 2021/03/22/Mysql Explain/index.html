@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="Mysql,性能调优," />
 
 
 
@@ -79,12 +79,18 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/index.html">
+<meta name="description" content="Explain简介使用Explain关键字可以模拟优化器执行SQL查询语句，从而知道MySQL是如何处理SQL语句，分析查询语句或者是表结构的性能瓶颈。 explain作用 表的读取顺序 数据读取操作的操作类型 哪些索引可以使用 哪些索引被实际使用 表之间的引用 每张表有多少行被优化器查询  explain使用explain + sql语句 id    select_type    table">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql Explain">
+<meta property="og:url" content="http://example.com/2021/03/22/Mysql%20Explain/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Explain简介使用Explain关键字可以模拟优化器执行SQL查询语句，从而知道MySQL是如何处理SQL语句，分析查询语句或者是表结构的性能瓶颈。 explain作用 表的读取顺序 数据读取操作的操作类型 哪些索引可以使用 哪些索引被实际使用 表之间的引用 每张表有多少行被优化器查询  explain使用explain + sql语句 id    select_type    table">
 <meta property="og:locale">
+<meta property="article:published_time" content="2021-03-22T13:07:44.000Z">
+<meta property="article:modified_time" content="2021-03-24T13:12:38.683Z">
 <meta property="article:author" content="lwwtl">
+<meta property="article:tag" content="Mysql">
+<meta property="article:tag" content="性能调优">
 <meta name="twitter:card" content="summary">
 
 
@@ -115,13 +121,13 @@
 
 
 
-  <link rel="canonical" href="http://example.com/"/>
+  <link rel="canonical" href="http://example.com/2021/03/22/Mysql Explain/"/>
 
 
 
 
 
-  <title>Hexo</title>
+  <title>Mysql Explain | Hexo</title>
   
 
 
@@ -140,8 +146,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -254,187 +259,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/24/Mysql%20%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/24/Mysql%20%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/" itemprop="url">Mysql 索引优化</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-24T21:07:44+08:00">
-                2021-03-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">Mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="优化案例"><a href="#优化案例" class="headerlink" title="优化案例"></a>优化案例</h3><h4 id="单表优化"><a href="#单表优化" class="headerlink" title="单表优化"></a>单表优化</h4><p>对where后的字段建立索引，通过explain分析来进行优化索引。</p>
-<h4 id="两表优化"><a href="#两表优化" class="headerlink" title="两表优化"></a>两表优化</h4><h5 id="查看执行计划"><a href="#查看执行计划" class="headerlink" title="查看执行计划"></a>查看执行计划</h5><p><img src="https://img-blog.csdnimg.cn/20210219105440547.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmdsZV8wOTEw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>由于是LEFT JOIN，所以左表是主表，因此第一次索引尝试加在主表上</p>
-<h5 id="只对左表class新增索引"><a href="#只对左表class新增索引" class="headerlink" title="只对左表class新增索引"></a>只对左表class新增索引</h5><p><img src="https://img-blog.csdnimg.cn/20210219110722108.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmdsZV8wOTEw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p><strong>结论：虽然type变为index，但是扫描行数依然是全表扫描。</strong></p>
-<h5 id="只对右表book-新增索引"><a href="#只对右表book-新增索引" class="headerlink" title="只对右表book 新增索引"></a>只对右表book 新增索引</h5><p><img src="https://img-blog.csdnimg.cn/20210219111018407.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmdsZV8wOTEw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p><strong>结果：type变为ref，rows只扫描了一行。</strong><br><strong>结论：这是由于LEFT JOIN特性决定的，由于左表数据全都有，所以关键在于如何从右表进行搜索，所以右表一定要添加索引</strong></p>
-<h4 id="三表优化"><a href="#三表优化" class="headerlink" title="三表优化"></a>三表优化</h4><ul>
-<li><strong>语句优化应尽可能减少join语句中NestedLoop的循环总次数，即“永远用小结果集驱动大结果集”。</strong></li>
-<li><strong>优先优化NestedLoop的内层循环。</strong></li>
-<li><strong>尽量保证join语句中被驱动表的条件字段添加了索引（即LEFT JOIN在右表上添加，反之亦然）。</strong></li>
-<li><strong>当无法保证被驱动表的条件字段添加索引时，且内存资源充足的前提下，不妨调整join buffer以达到性能优化的目的。</strong></li>
-</ul>
-<h3 id="如何避免索引失效"><a href="#如何避免索引失效" class="headerlink" title="如何避免索引失效"></a>如何避免索引失效</h3><ol>
-<li><p>全值匹配我最爱</p>
-</li>
-<li><p>最佳左前缀法则</p>
-<p>如果索引了多列，要遵守最佳左前缀法则。指的是查询从索引的最左前列开始并且<em><strong>不跳过索引中的列</strong></em>。</p>
-</li>
-<li><p>不在索引列上做任何操作（计算、函数、(自动or手动)类型转换），会导致索引失效而转向全表扫描</p>
-</li>
-<li><p>存储引擎不能使用索引中范围条件右边的列，范围之后全失效</p>
-</li>
-<li><p>尽量使用覆盖索引(只访问索引的查询(索引列和查询列一致))，减少select*</p>
-</li>
-<li><p>mysql在使用不等于(!=或者&lt;&gt;)的时候无法使用索引会导致全表扫描</p>
-</li>
-<li><p>is null ,is not null也无法使用索引</p>
-</li>
-<li><p>like以通配符开头(‘%abc…’)mysql索引失效会变成全表扫描的操作</p>
-<p>如果非要用 %xx%  或者 %xx，建立覆盖索引</p>
-</li>
-<li><p>字符串不加单引号会导致索引失效</p>
-</li>
-<li><p>少用or,用它来连接时会索引失效</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
 
   
 
@@ -464,9 +291,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/Mysql%20Explain/" itemprop="url">Mysql Explain</a></h1>
+          <h1 class="post-title" itemprop="name headline">Mysql Explain</h1>
         
 
         <div class="post-meta">
@@ -538,9 +363,7 @@
       
 
       
-        
-          
-            <h3 id="Explain简介"><a href="#Explain简介" class="headerlink" title="Explain简介"></a>Explain简介</h3><p>使用Explain关键字可以模拟优化器执行SQL查询语句，从而知道MySQL是如何处理SQL语句，分析查询语句或者是表结构的性能瓶颈。</p>
+        <h3 id="Explain简介"><a href="#Explain简介" class="headerlink" title="Explain简介"></a>Explain简介</h3><p>使用Explain关键字可以模拟优化器执行SQL查询语句，从而知道MySQL是如何处理SQL语句，分析查询语句或者是表结构的性能瓶颈。</p>
 <h4 id="explain作用"><a href="#explain作用" class="headerlink" title="explain作用"></a>explain作用</h4><ul>
 <li>表的读取顺序</li>
 <li>数据读取操作的操作类型</li>
@@ -590,8 +413,6 @@
 <h4 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h4><p>select的数据列只用从索引中就能够取得，不必读取数据行，Mysql可以利用索引返回select列表中的字段，而不必根据索引再次读取数据文件，换句话说查询列要被所建的索引覆盖</p>
 <p>注意：如果要使用覆盖索引，一定要注意select列表中只取出需要的列，不可select *</p>
 
-          
-        
       
     </div>
     
@@ -606,221 +427,42 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/21/Mysql%E7%AE%80%E4%BB%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/21/Mysql%E7%AE%80%E4%BB%8B/" itemprop="url">Mysql简介</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-21T16:29:21+08:00">
-                2021-03-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">Mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/Mysql/" rel="tag"># Mysql</a>
           
-
+            <a href="/tags/%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/" rel="tag"># 性能调优</a>
           
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Mysql存储引擎"><a href="#Mysql存储引擎" class="headerlink" title="Mysql存储引擎"></a>Mysql存储引擎</h3><h5 id="MyISAM和InnoDB的区别"><a href="#MyISAM和InnoDB的区别" class="headerlink" title="MyISAM和InnoDB的区别"></a>MyISAM和InnoDB的区别</h5><p><img src="http://rlw.cn-bj.ufileos.com/%E6%8D%95%E8%8E%B7.JPG?UCloudPublicKey=3xeS246CmmzEiKl4GZUEKG2BBLDOssOzPyT3yvJFy&Signature=EWHQoGdRKlQPbUjWPAThIkDv4Zk=&Expires=1616592856" alt="img"></p>
-<h5 id="性能下降SQL慢"><a href="#性能下降SQL慢" class="headerlink" title="性能下降SQL慢"></a>性能下降SQL慢</h5><ul>
-<li><p>查询语句写得烂</p>
-</li>
-<li><p>索引失效</p>
-</li>
-<li><p>关联查询太多join</p>
-</li>
-<li><p>服务器调优及各个参数设置</p>
-</li>
-</ul>
-<h3 id="常用的join查询"><a href="#常用的join查询" class="headerlink" title="常用的join查询"></a>常用的join查询</h3><p><img src="https://img-blog.csdnimg.cn/img_convert/2a8f7e3f91d87f79009057f0a51a87e2.png" alt="img"></p>
-<h3 id="索引简介"><a href="#索引简介" class="headerlink" title="索引简介"></a>索引简介</h3><p>Mysql官方对索引的定义为：索引是帮助Mysql高效获取数据的数据结构。</p>
-<p>简单理解为排好序的快速查找数据结构。</p>
-<p>二叉查找树，平衡二叉树，B树，B+树：<a target="_blank" rel="noopener" href="http://www.liuzk.com/410.html">http://www.liuzk.com/410.html</a></p>
-<p>一般来说索引本身也很大，不可能全部存储在内存中，因此索引往往以索引文件的形式存储在磁盘上。</p>
-<h4 id="索引的优势："><a href="#索引的优势：" class="headerlink" title="索引的优势："></a>索引的优势：</h4><ol>
-<li>类似大学图书馆建书目索引，提高数据的检索效率，降低数据库的IO成本</li>
-<li>通过索引队列对数据进行排序，降低数据排序的成本，降低了CPU的消耗</li>
-</ol>
-<h4 id="索引的劣势："><a href="#索引的劣势：" class="headerlink" title="索引的劣势："></a>索引的劣势：</h4><ol>
-<li><p>实际上索引也是一张表，该表保存了主键与索引字段，并指向实体表的记录，所以索引列也是要占用空间的</p>
-</li>
-<li><p>虽然索引大大提高了查询速度，同时却会降低更新表的速度，如对表进行INSERT、UPDATE和DELETE。因为更新表时，Mysql不仅要保存数据，还有保存索引文件每次更新添加了索引列的字段，调整更新所带来的键值变化后的信息</p>
-</li>
-</ol>
-<h4 id="索引分类"><a href="#索引分类" class="headerlink" title="索引分类"></a>索引分类</h4><ul>
-<li>单值索引：即一个索引只包含单个列，一个表可以有多个单列索引</li>
-<li>唯一索引：索引列的值必须唯一，但允许有空值</li>
-<li>主键索引：是一种特殊的唯一索引，一个表只能有一个主键，不允许有空值。一般是在建表的时候同时创建主键索引</li>
-<li>复合索引：即一个索引包含多个列</li>
-</ul>
-<h4 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h4><ul>
-<li><p>创建 create  index indexName on mytable(columnname);</p>
-<p>​         alert mytable add index [indexName] on (columnname);</p>
-</li>
-<li><p>删除 drop index [indexName] on mytable;</p>
-</li>
-<li><p>查看 show index from table_name;</p>
-</li>
-</ul>
-<h5 id="使用alert命令，有四种方式来添加数据表的索引"><a href="#使用alert命令，有四种方式来添加数据表的索引" class="headerlink" title="使用alert命令，有四种方式来添加数据表的索引"></a>使用alert命令，有四种方式来添加数据表的索引</h5><ul>
-<li>ALTER TABLE tbl_name ADD PRIMARY KEY(column_list)：该语句添加一个主键，这意味着索引值必须是唯一的，且不能为NULL。</li>
-<li>ALTER TABLE tbl_name ADD UNIQUE index_name(column_list)：这条语句创建索引的值必须是唯一的（除了NULL外，NULL可能会出现多次）。</li>
-<li>ALTER TABLE tbl_name ADD INDEX index_name(column_list)：.添加普通索引，索引值可出现多次。</li>
-<li>ALTER TABLE tbl_name ADD FULLTEXT index_name(column_list)：该语句指定了索引为FULLTEXT，用于全文索引。</li>
-</ul>
-<h4 id="索引结构"><a href="#索引结构" class="headerlink" title="索引结构"></a>索引结构</h4><ul>
-<li><p>BTree索引</p>
-</li>
-<li><p>B+Tree索引</p>
-</li>
-<li><p>Hash索引</p>
-</li>
-<li><p>full-text全文索引</p>
-</li>
-<li><p>R-Tree索引</p>
-</li>
-</ul>
-<p><strong>【B+Tree 与 BTree 的区别】</strong></p>
-<p>B-树的关键字（数据项）和记录是放在一起的； B+树的非叶子节点中只有关键字和指向下一个节点的索引， 记录只放在叶子节点中。</p>
-<p><strong>【B+Tree 与 BTree 的查找过程】</strong></p>
-<p>在 B 树中， 越靠近根节点的记录查找时间越快， 只要找到关键字即可确定记录的存在； 而 B+ 树中每个记录的查找时间基本是一样的， 都需要从根节点走到叶子节点， 而且在叶子节点中还要再比较关键字。<br>从这个角度看 B 树的性能好像要比 B+ 树好， 而在实际应用中却是 B+ 树的性能要好些。 因为 B+ 树的非叶子节点不存放实际的数据，这样每个节点可容纳的元素个数比 B 树多， 树高比 B 树小， 这样带来的好处是减少磁盘访问次数。<br>尽管 B+ 树找到一个记录所需的比较次数要比 B 树多， 但是一次磁盘访问的时间相当于成百上千次内存比较的时间， 因此实际中B+ 树的性能可能还会好些， 而且 B+树的叶子节点使用指针连接在一起， 方便顺序遍历（范围搜索）， 这也是很多数据库和文件系统使用 B+树的缘故。<br><strong>【性能提升】</strong></p>
-<p>真实的情况是， 3 层的 B+ 树可以表示上百万的数据， 如果上百万的数据查找只需要三次 IO， 性能提高将是巨大的，如果没有索引， 每个数据项都要发生一次 IO， 那么总共需要百万次的 IO， 显然成本非常非常高。</p>
-<p><strong>【思考： 为什么说 B+树比 B-树更适合实际应用中操作系统的文件索引和数据库索引？】</strong></p>
-<p>B+树的磁盘读写代价更低：B+树的内部结点并没有指向关键字具体信息的指针。 因此其内部结点相对 B 树更小。 如果把所有同一内部结点的关键字存放在同一盘块中， 那么盘块所能容纳的关键字数量也越多。 一次性读入内存中的需要查找的关键字也就越多。 相对来说 IO 读写次数也就降低了。<br>B+树的查询效率更加稳定：由于非终结点并不是最终指向文件内容的结点， 而只是叶子结点中关键字的索引。 所以任何关键字的查找必须走一条从根结点到叶子结点的路。 所有关键字查询的路径长度相同， 导致每一个数据的查询效率相当。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
       
 
       
       
-        <div class="post-eof"></div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/21/Mysql%E7%AE%80%E4%BB%8B/" rel="next" title="Mysql简介">
+                <i class="fa fa-chevron-left"></i> Mysql简介
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/03/24/Mysql%20%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/" rel="prev" title="Mysql 索引优化">
+                Mysql 索引优化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
       
     </footer>
   </div>
@@ -830,10 +472,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -841,6 +484,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -861,8 +508,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -922,6 +578,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Explain%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">Explain简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#explain%E4%BD%9C%E7%94%A8"><span class="nav-number">1.1.</span> <span class="nav-text">explain作用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#explain%E4%BD%BF%E7%94%A8"><span class="nav-number">1.2.</span> <span class="nav-text">explain使用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#id"><span class="nav-number">1.2.1.</span> <span class="nav-text">id</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#select-type"><span class="nav-number">1.2.2.</span> <span class="nav-text">select_type</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#type"><span class="nav-number">1.2.3.</span> <span class="nav-text">type</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#possible-keys"><span class="nav-number">1.2.4.</span> <span class="nav-text">possible_keys</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#key"><span class="nav-number">1.2.5.</span> <span class="nav-text">key</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#key-len"><span class="nav-number">1.2.6.</span> <span class="nav-text">key_len</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ref"><span class="nav-number">1.2.7.</span> <span class="nav-text">ref</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#rows"><span class="nav-number">1.2.8.</span> <span class="nav-text">rows</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#extra"><span class="nav-number">1.2.9.</span> <span class="nav-text">extra</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95"><span class="nav-number">1.3.</span> <span class="nav-text">覆盖索引</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -1062,6 +734,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
