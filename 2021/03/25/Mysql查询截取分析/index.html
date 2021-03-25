@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Mysql,性能调优," />
+  <meta name="keywords" content="Mysql,性能调优,Mysql日志," />
 
 
 
@@ -79,23 +79,20 @@
 
 
 
-<meta name="description" content="优化案例单表优化对where后的字段建立索引，通过explain分析来进行优化索引。 两表优化查看执行计划 由于是LEFT JOIN，所以左表是主表，因此第一次索引尝试加在主表上 只对左表class新增索引 结论：虽然type变为index，但是扫描行数依然是全表扫描。 只对右表book 新增索引 结果：type变为ref，rows只扫描了一行。结论：这是由于LEFT JOIN特性决定的，由于左表">
+<meta name="description" content="Mysql优化流程 慢查询地开启并捕获 explain+慢SQL分析 show profile查询SQL在Mysql服务器里面的执行细节和生命周期情况 SQL数据库服务器参数的调优  优化原则小表驱动大表，小的数据集驱动大的数据集 当B表的数据集小于A表的数据集时，用in优于exists 当A表的数据集小于B表的数据集时，用exists优于in 注意：A表与B表的ID字段应建立索引 OrderBy">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mysql 索引优化">
-<meta property="og:url" content="http://example.com/2021/03/24/Mysql%20%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:title" content="Mysql查询截取分析">
+<meta property="og:url" content="http://example.com/2021/03/25/Mysql%E6%9F%A5%E8%AF%A2%E6%88%AA%E5%8F%96%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="优化案例单表优化对where后的字段建立索引，通过explain分析来进行优化索引。 两表优化查看执行计划 由于是LEFT JOIN，所以左表是主表，因此第一次索引尝试加在主表上 只对左表class新增索引 结论：虽然type变为index，但是扫描行数依然是全表扫描。 只对右表book 新增索引 结果：type变为ref，rows只扫描了一行。结论：这是由于LEFT JOIN特性决定的，由于左表">
+<meta property="og:description" content="Mysql优化流程 慢查询地开启并捕获 explain+慢SQL分析 show profile查询SQL在Mysql服务器里面的执行细节和生命周期情况 SQL数据库服务器参数的调优  优化原则小表驱动大表，小的数据集驱动大的数据集 当B表的数据集小于A表的数据集时，用in优于exists 当A表的数据集小于B表的数据集时，用exists优于in 注意：A表与B表的ID字段应建立索引 OrderBy">
 <meta property="og:locale">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210219105440547.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmdsZV8wOTEw,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210219110722108.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmdsZV8wOTEw,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210219111018407.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmdsZV8wOTEw,size_16,color_FFFFFF,t_70">
-<meta property="article:published_time" content="2021-03-24T13:07:44.000Z">
-<meta property="article:modified_time" content="2021-03-24T13:13:23.550Z">
+<meta property="article:published_time" content="2021-03-25T08:29:21.000Z">
+<meta property="article:modified_time" content="2021-03-25T11:09:27.616Z">
 <meta property="article:author" content="lwwtl">
 <meta property="article:tag" content="Mysql">
 <meta property="article:tag" content="性能调优">
+<meta property="article:tag" content="Mysql日志">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210219105440547.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmdsZV8wOTEw,size_16,color_FFFFFF,t_70">
 
 
 
@@ -125,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://example.com/2021/03/24/Mysql 索引优化/"/>
+  <link rel="canonical" href="http://example.com/2021/03/25/Mysql查询截取分析/"/>
 
 
 
 
 
-  <title>Mysql 索引优化 | Hexo</title>
+  <title>Mysql查询截取分析 | Hexo</title>
   
 
 
@@ -278,7 +275,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/24/Mysql%20%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/25/Mysql%E6%9F%A5%E8%AF%A2%E6%88%AA%E5%8F%96%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -295,7 +292,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Mysql 索引优化</h1>
+          <h1 class="post-title" itemprop="name headline">Mysql查询截取分析</h1>
         
 
         <div class="post-meta">
@@ -307,8 +304,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-24T21:07:44+08:00">
-                2021-03-24
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-25T16:29:21+08:00">
+                2021-03-25
               </time>
             
 
@@ -367,43 +364,101 @@
       
 
       
-        <h3 id="优化案例"><a href="#优化案例" class="headerlink" title="优化案例"></a>优化案例</h3><h4 id="单表优化"><a href="#单表优化" class="headerlink" title="单表优化"></a>单表优化</h4><p>对where后的字段建立索引，通过explain分析来进行优化索引。</p>
-<h4 id="两表优化"><a href="#两表优化" class="headerlink" title="两表优化"></a>两表优化</h4><h5 id="查看执行计划"><a href="#查看执行计划" class="headerlink" title="查看执行计划"></a>查看执行计划</h5><p><img src="https://img-blog.csdnimg.cn/20210219105440547.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmdsZV8wOTEw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>由于是LEFT JOIN，所以左表是主表，因此第一次索引尝试加在主表上</p>
-<h5 id="只对左表class新增索引"><a href="#只对左表class新增索引" class="headerlink" title="只对左表class新增索引"></a>只对左表class新增索引</h5><p><img src="https://img-blog.csdnimg.cn/20210219110722108.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmdsZV8wOTEw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p><strong>结论：虽然type变为index，但是扫描行数依然是全表扫描。</strong></p>
-<h5 id="只对右表book-新增索引"><a href="#只对右表book-新增索引" class="headerlink" title="只对右表book 新增索引"></a>只对右表book 新增索引</h5><p><img src="https://img-blog.csdnimg.cn/20210219111018407.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmdsZV8wOTEw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p><strong>结果：type变为ref，rows只扫描了一行。</strong><br><strong>结论：这是由于LEFT JOIN特性决定的，由于左表数据全都有，所以关键在于如何从右表进行搜索，所以右表一定要添加索引</strong></p>
-<h4 id="三表优化"><a href="#三表优化" class="headerlink" title="三表优化"></a>三表优化</h4><ul>
-<li><strong>语句优化应尽可能减少join语句中NestedLoop的循环总次数，即“永远用小结果集驱动大结果集”。</strong></li>
-<li><strong>优先优化NestedLoop的内层循环。</strong></li>
-<li><strong>尽量保证join语句中被驱动表的条件字段添加了索引（即LEFT JOIN在右表上添加，反之亦然）。</strong></li>
-<li><strong>当无法保证被驱动表的条件字段添加索引时，且内存资源充足的前提下，不妨调整join buffer以达到性能优化的目的。</strong></li>
+        <h3 id="Mysql优化流程"><a href="#Mysql优化流程" class="headerlink" title="Mysql优化流程"></a>Mysql优化流程</h3><ol>
+<li>慢查询地开启并捕获</li>
+<li>explain+慢SQL分析</li>
+<li>show profile查询SQL在Mysql服务器里面的执行细节和生命周期情况</li>
+<li>SQL数据库服务器参数的调优</li>
+</ol>
+<h3 id="优化原则"><a href="#优化原则" class="headerlink" title="优化原则"></a>优化原则</h3><p>小表驱动大表，小的数据集驱动大的数据集</p>
+<p>当B表的数据集小于A表的数据集时，用in优于exists</p>
+<p>当A表的数据集小于B表的数据集时，用exists优于in</p>
+<p>注意：A表与B表的ID字段应建立索引</p>
+<h3 id="OrderBy关键字优化"><a href="#OrderBy关键字优化" class="headerlink" title="OrderBy关键字优化"></a>OrderBy关键字优化</h3><p><strong>OrderBy子句，尽量使用Index排序，避免使用FileSort方式排序</strong></p>
+<p>OrderBy满足两种情况，会使用Index方式排序：</p>
+<ol>
+<li>OrderBy语句使用索引最左前列</li>
+<li>使用Where子句与OrderBy子句条件列组合满足索引最左前列</li>
+</ol>
+<p>尽可能在索引列上完成排序操作，遵照索引建的最佳左前缀</p>
+<p><strong>如果不在索引列上，filesort有两种算法：双路排序和单路排序</strong></p>
+<p>双路排序：Mysql4.1之前使用双路排序，读取行指针和orderby列，对他们进行排序</p>
+<p>单路排序：Mysql4.1之后，按照orderby列在buffer对它们进行排序，然后扫描排序后的列表进行输出，效率更快，避免了二次读取数据，更占空间</p>
+<p><strong>单路排序引发的问题</strong></p>
+<p>在sort_buffer中，有可能取出的数据大小超过了sort_buffer的容量，导致每次只能取sort_buffer容量大小的数据，从而导致多次I/O</p>
+<p><strong>优化策略</strong></p>
+<ul>
+<li>尽量不使用Select *，只query需要的字段</li>
+<li>增大sort_buffer_size参数的设置</li>
+<li>增大max_length_for_sort_data</li>
 </ul>
-<h3 id="如何避免索引失效"><a href="#如何避免索引失效" class="headerlink" title="如何避免索引失效"></a>如何避免索引失效</h3><ol>
-<li><p>全值匹配我最爱</p>
+<p><strong>orderby能使用索引最左前缀</strong></p>
+<ul>
+<li>order by a</li>
+<li>order by a,b</li>
+<li>order by a,b,c</li>
+<li>order by a desc,b desc,c desc</li>
+</ul>
+<p><strong>如果where使用索引的最左前缀定义为常量，则order by能使用索引</strong></p>
+<ul>
+<li>where a = const order by b,c</li>
+<li>where a = const and b = const order by c</li>
+<li>where a = const and b &gt; const order by b,c</li>
+</ul>
+<p><strong>不能使用索引进行排序</strong></p>
+<ul>
+<li>order by a asc,b desc,c desc     //排序不一致</li>
+<li>where g = const order by b,c    //丢失a索引</li>
+<li>where a = const order by c       //丢失b索引</li>
+<li>where a = const order by a,d   //d不是索引的一部分</li>
+<li>where a in (…) order by b,c      //对应排序来说，多个相等条件也是范围查询</li>
+</ul>
+<h3 id="Group-By关键字优化"><a href="#Group-By关键字优化" class="headerlink" title="Group By关键字优化"></a>Group By关键字优化</h3><p>group by实质是先排序后进行分组，遵照索引建的最佳左前缀</p>
+<p>当无法使用索引列，增大max_length_for_sort_data参数的设置，增大sort_buffer_size参数的设置</p>
+<p>where高于having，能写在where限定的条件就不要写having限定</p>
+<h3 id="慢查询日志"><a href="#慢查询日志" class="headerlink" title="慢查询日志"></a>慢查询日志</h3><p>默认情况下慢查询日志禁用</p>
+<p>show variables like ‘%slow_query_log%’;</p>
+<p>开启慢查询日志：set global slow_query_log=1;(只对当前数据库生效，且mysql重启失效)</p>
+<p><strong>long_query_time</strong></p>
+<p>show variables like ‘long_query_time%’;</p>
+<p>默认为10秒，mysql源码中判断大于long_query_time的sql会被记录</p>
+<p>set global long_query_time=3;（重新连接会话后可以看到修改值）</p>
+<p><strong>日志分析工具mysqldumpslow</strong></p>
+<h3 id="Show-Profile分析sql"><a href="#Show-Profile分析sql" class="headerlink" title="Show Profile分析sql"></a>Show Profile分析sql</h3><p>简介：是mysql提供可以用来分析sql语句执行的资源消耗情况。</p>
+<p>默认情况下，处于关闭状态，并保存最近15次运行结果。</p>
+<h4 id="分析步骤"><a href="#分析步骤" class="headerlink" title="分析步骤"></a><strong>分析步骤</strong></h4><ol>
+<li><p>开启功能</p>
+<p>show variables like ‘profiling’;</p>
+<p>set profiling=on;</p>
 </li>
-<li><p>最佳左前缀法则</p>
-<p>如果索引了多列，要遵守最佳左前缀法则。指的是查询从索引的最左前列开始并且<em><strong>不跳过索引中的列</strong></em>。</p>
+<li><p>运行sql</p>
 </li>
-<li><p>不在索引列上做任何操作（计算、函数、(自动or手动)类型转换），会导致索引失效而转向全表扫描</p>
+<li><p>查看结果</p>
+<p>show profiles;</p>
 </li>
-<li><p>存储引擎不能使用索引中范围条件右边的列，范围之后全失效</p>
+<li><p>诊断sql</p>
+<p>show profile cpu,block(等等参数) io for query id;</p>
 </li>
-<li><p>尽量使用覆盖索引(只访问索引的查询(索引列和查询列一致))，减少select*</p>
-</li>
-<li><p>mysql在使用不等于(!=或者&lt;&gt;)的时候无法使用索引会导致全表扫描</p>
-</li>
-<li><p>is null ,is not null也无法使用索引</p>
-</li>
-<li><p>like以通配符开头(‘%abc…’)mysql索引失效会变成全表扫描的操作</p>
-<p>如果非要用 %xx%  或者 %xx，建立覆盖索引</p>
-</li>
-<li><p>字符串不加单引号会导致索引失效</p>
-</li>
-<li><p>少用or,用它来连接时会索引失效</p>
+<li><p>日常开发需要注意的结论</p>
+<p>converting heap to MyISAM 查询结果过大，使用磁盘空间</p>
+<p>creating tmp table 创建临时表</p>
+<p>copying to tmp table on disk 把内存中临时表复制到磁盘</p>
+<p>locked</p>
 </li>
 </ol>
+<h4 id="全局查询日志"><a href="#全局查询日志" class="headerlink" title="全局查询日志"></a>全局查询日志</h4><p><strong>配置启用</strong></p>
+<p>开启</p>
+<p>general_log = 1</p>
+<p>记录日志文件的路径</p>
+<p>general_log_file = /path/logfile</p>
+<p>输出格式</p>
+<p>log_output = file</p>
+<p><strong>编码启用</strong></p>
+<p>set global general_log = 1;</p>
+<p>set global log_output = ‘TABLE’;</p>
+<p>之后所编写的sql语句，将会记录到mysql库里的general_log表</p>
+<p>select * from mysql.general_log;</p>
+<p><strong>永远不要在生产环境开启这个功能</strong></p>
 
       
     </div>
@@ -425,6 +480,8 @@
           
             <a href="/tags/%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/" rel="tag"># 性能调优</a>
           
+            <a href="/tags/Mysql%E6%97%A5%E5%BF%97/" rel="tag"># Mysql日志</a>
+          
         </div>
       
 
@@ -436,8 +493,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/03/22/Mysql%20Explain/" rel="next" title="Mysql Explain">
-                <i class="fa fa-chevron-left"></i> Mysql Explain
+              <a href="/2021/03/24/Mysql%20%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96/" rel="next" title="Mysql 索引优化">
+                <i class="fa fa-chevron-left"></i> Mysql 索引优化
               </a>
             
           </div>
@@ -446,8 +503,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/03/25/Mysql%E6%9F%A5%E8%AF%A2%E6%88%AA%E5%8F%96%E5%88%86%E6%9E%90/" rel="prev" title="Mysql查询截取分析">
-                Mysql查询截取分析 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/03/25/Mysql%E9%94%81%E6%9C%BA%E5%88%B6/" rel="prev" title="Mysql锁机制">
+                Mysql锁机制 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -580,7 +637,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E6%A1%88%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">优化案例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E8%A1%A8%E4%BC%98%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">单表优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%A4%E8%A1%A8%E4%BC%98%E5%8C%96"><span class="nav-number">1.2.</span> <span class="nav-text">两表优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92"><span class="nav-number">1.2.1.</span> <span class="nav-text">查看执行计划</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%AA%E5%AF%B9%E5%B7%A6%E8%A1%A8class%E6%96%B0%E5%A2%9E%E7%B4%A2%E5%BC%95"><span class="nav-number">1.2.2.</span> <span class="nav-text">只对左表class新增索引</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%AA%E5%AF%B9%E5%8F%B3%E8%A1%A8book-%E6%96%B0%E5%A2%9E%E7%B4%A2%E5%BC%95"><span class="nav-number">1.2.3.</span> <span class="nav-text">只对右表book 新增索引</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%89%E8%A1%A8%E4%BC%98%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">三表优化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E7%B4%A2%E5%BC%95%E5%A4%B1%E6%95%88"><span class="nav-number">2.</span> <span class="nav-text">如何避免索引失效</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql%E4%BC%98%E5%8C%96%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">Mysql优化流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E5%8E%9F%E5%88%99"><span class="nav-number">2.</span> <span class="nav-text">优化原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OrderBy%E5%85%B3%E9%94%AE%E5%AD%97%E4%BC%98%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">OrderBy关键字优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Group-By%E5%85%B3%E9%94%AE%E5%AD%97%E4%BC%98%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">Group By关键字优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97"><span class="nav-number">5.</span> <span class="nav-text">慢查询日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-Profile%E5%88%86%E6%9E%90sql"><span class="nav-number">6.</span> <span class="nav-text">Show Profile分析sql</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E6%AD%A5%E9%AA%A4"><span class="nav-number">6.1.</span> <span class="nav-text">分析步骤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97"><span class="nav-number">6.2.</span> <span class="nav-text">全局查询日志</span></a></li></ol></li></ol></div>
             
 
           </div>
